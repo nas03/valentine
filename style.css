@@ -1,0 +1,220 @@
+:root {
+  --bg: #050510;
+  --accent: #ff4b8b;
+  --accent-soft: rgba(255, 75, 139, 0.25);
+  --text-main: #ffffff;
+  --text-muted: #d2c7ff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: radial-gradient(circle at top, #1b1736 0, var(--bg) 55%);
+  color: var(--text-main);
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#heart-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  pointer-events: none;
+}
+
+.card {
+  pointer-events: auto;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  padding: 2.5rem 2.25rem 2rem;
+  border-radius: 24px;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.08), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(255, 75, 139, 0.12), transparent 60%),
+    rgba(7, 6, 24, 0.85);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  animation: card-float 3.5s ease-in-out infinite alternate;
+}
+
+.card h1 {
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-size: clamp(1.9rem, 4vw, 2.5rem);
+  line-height: 1.18;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.8rem;
+}
+
+.card p {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  margin-bottom: 1.7rem;
+}
+
+#yes-button {
+  border: none;
+  outline: none;
+  padding: 0.9rem 2.8rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #fff;
+  background: radial-gradient(circle at top left, #ff8ac5, #ff4b8b 45%, #ff135a 100%);
+  box-shadow:
+    0 12px 32px rgba(255, 75, 139, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.14);
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+#yes-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.55), transparent 55%);
+  opacity: 0.7;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+#yes-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 18px 40px rgba(255, 75, 139, 0.75),
+    0 0 0 1px rgba(255, 255, 255, 0.18);
+  filter: brightness(1.06);
+}
+
+#yes-button:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow:
+    0 6px 16px rgba(255, 75, 139, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.signature {
+  margin-top: 1.4rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.yes-message {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, rgba(12, 8, 34, 0.2), rgba(5, 5, 16, 0.9));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.yes-message.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.yes-message-inner {
+  text-align: center;
+  padding: 2rem 2.5rem;
+  border-radius: 24px;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.09), transparent 50%),
+    rgba(10, 8, 30, 0.96);
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  animation: pop-in 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.yes-message-inner h2 {
+  font-family: "Playfair Display", "Times New Roman", serif;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.yes-message-inner p {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes card-float {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 1.9rem 1.6rem 1.7rem;
+    border-radius: 18px;
+  }
+
+  .card h1 {
+    font-size: 1.7rem;
+  }
+
+  #yes-button {
+    width: 100%;
+  }
+
+  .yes-message-inner {
+    margin: 0 1.5rem;
+    padding: 1.6rem 1.4rem;
+  }
+}
