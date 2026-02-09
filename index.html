@@ -3,228 +3,418 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For My Valentine</title>
+    <title>Be My Valentine?</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; overflow: hidden; background-color: #0b0105; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        #ui-layer {
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #ffeff5; 
+            font-family: 'Fredoka One', cursive; 
+        }
+
+        /* --- 3D CANVAS --- */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* --- MAIN UI --- */
+        #main-ui {
+            position: absolute;
+            top: 60%; 
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 10;
+            width: 100%;
+            transition: opacity 0.5s ease;
+        }
+
+        h1 {
+            color: #ff4d80;
+            font-size: 3.5rem;
+            text-shadow: 4px 4px 0px #fff;
+            margin-bottom: 30px;
+            -webkit-text-stroke: 2px #fff;
+        }
+
+        .btn-yes {
+            background-color: #ff4d80;
+            color: white;
+            border: 4px solid white;
+            padding: 15px 60px;
+            font-size: 1.8rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Fredoka One', cursive;
+            box-shadow: 0 8px 0px #c21c4e, 0 15px 20px rgba(0,0,0,0.15);
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn-yes:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0px #c21c4e, 0 4px 4px rgba(0,0,0,0.1);
+        }
+
+        /* --- ENVELOPE CONTAINER --- */
+        #letter-container {
+            display: none; 
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 10;
-            user-select: none;
-            transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        h1 {
-            color: #ffc0cb;
-            font-size: 2.2rem;
-            text-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
-            margin-bottom: 40px;
-            font-weight: 300;
-        }
-        button {
-            padding: 12px 50px;
-            font-size: 1.1rem;
-            background: rgba(255, 105, 180, 0.2);
-            border: 1px solid #ff69b4;
-            border-radius: 30px;
-            color: #ffb6c1;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(5px);
-        }
-        button:hover {
-            background: #ff69b4;
-            color: white;
-            box-shadow: 0 0 30px rgba(255, 105, 180, 0.6);
-            transform: scale(1.05);
+            z-index: 20;
+            width: 300px;
+            height: 200px;
         }
 
-        /* Letter view styles */
-        .letter-container {
-            max-width: 480px;
-            padding: 28px 26px 24px;
-            margin: 0 auto;
-            border-radius: 18px;
-            background: rgba(12, 2, 10, 0.92);
-            border: 1px solid rgba(255, 192, 203, 0.35);
-            box-shadow: 0 0 40px rgba(255, 105, 180, 0.45);
-            color: #ffe4f0;
-            text-align: left;
-            backdrop-filter: blur(10px);
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #ff4d80;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+        }
+
+        .envelope:before { 
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 100px 150px 0 150px;
+            border-color: transparent transparent transparent transparent;
+            border-bottom-color: #ff6b95;
+            border-left-color: #ff6b95;
+            border-radius: 0 0 0 10px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .envelope:after { 
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 150px 100px 150px;
+            border-color: transparent transparent #ff85a8 transparent;
+            border-radius: 0 0 10px 10px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .lid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 100px 150px 0 150px;
+            border-color: #ff4d80 transparent transparent transparent;
+            z-index: 4;
+            transform-origin: top;
+            transition: transform 0.5s ease-in-out, z-index 0.2s 0.2s;
+        }
+
+        .lid.open {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        /* --- THE PAPER --- */
+        .paper {
+            position: absolute;
+            bottom: 0;
+            left: 15px;
+            width: 270px;
+            height: 180px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 -5px 10px rgba(0,0,0,0.05);
+            overflow: hidden; 
+        }
+
+        /* Content inside paper */
+        .paper-content {
             opacity: 0;
-            transform: translateY(16px);
-            animation: letterFadeIn 0.7s ease forwards;
-        }
-        .letter-title {
-            margin: 0 0 14px;
-            font-size: 1.6rem;
-            font-weight: 500;
-            color: #ffc0cb;
-            text-align: center;
-            text-shadow: 0 0 18px rgba(255, 105, 180, 0.7);
-        }
-        .letter-body {
-            line-height: 1.6;
-            font-size: 0.98rem;
-            margin-bottom: 20px;
-        }
-        .letter-body span.heart {
-            color: #ff6fa3;
-        }
-        .song-section-title {
-            margin: 0 0 10px;
-            font-size: 1.05rem;
-            font-weight: 500;
-            color: #ffd1e6;
-        }
-        .song-list {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 8px;
-            font-size: 0.95rem;
-        }
-        .song-list li {
-            margin-bottom: 6px;
-        }
-        .song-list a {
-            color: #ffb6f2;
-            text-decoration: none;
-        }
-        .song-list a:hover {
-            text-decoration: underline;
-            color: #ffffff;
-        }
-        .letter-footer {
-            margin-top: 16px;
-            font-size: 0.9rem;
-            text-align: center;
-            color: #f9c8de;
+            transform: translateY(20px);
+            transition: opacity 0.5s 0.8s, transform 0.5s 0.8s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
         }
 
-        @keyframes letterFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(16px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .paper.visible {
+            transform: translateY(-100px); 
         }
+        
+        .paper.expanded {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 60vw; 
+            height: 70vh; 
+            min-width: 320px;
+            max-width: 600px;
+            max-height: 800px;
+            transform: translate(-50%, -50%) scale(1);
+            z-index: 100;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            border: 8px solid #ff4d80;
+            border-radius: 20px;
+        }
+
+        .paper.expanded .paper-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- DECORATION IMAGES --- */
+        .decoration-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Align bottom so they sit nicely */
+            gap: 20px; /* Space between them */
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .decoration-img {
+            max-width: 45%; /* Ensure they fit side by side */
+            max-height: 150px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+
+        /* Add a cute hover effect */
+        .decoration-img:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .paper p {
+            font-family: 'Nunito', sans-serif; 
+            font-weight: 700;
+            color: #ff4d80;
+            font-size: 1rem; 
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .paper.expanded p {
+            font-size: 1.5rem; 
+        }
+
+        .paper::after {
+            content: '❤️';
+            font-size: 2rem;
+            margin-top: 15px;
+            display: block;
+        }
+        
+        .paper.expanded::after {
+            font-size: 3rem; 
+        }
+
+        /* --- SPEAKER ICON --- */
+        .speaker-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            opacity: 0; 
+            transition: opacity 0.5s 1s, transform 0.2s;
+            z-index: 101;
+            fill: #ff4d80;
+        }
+
+        .paper.expanded .speaker-icon {
+            opacity: 0.6; 
+        }
+        
+        .paper.expanded .speaker-icon:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .speaker-wave {
+            display: none;
+            transform-origin: center;
+            animation: pulse-wave 1s infinite;
+        }
+        
+        .playing .speaker-wave {
+            display: block;
+        }
+        
+        .playing .speaker-x {
+            display: none;
+        }
+        
+        @keyframes pulse-wave {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+
     </style>
 </head>
 <body>
 
-    <div id="ui-layer">
-        <h1>Do you want to be my valentine?</h1>
-        <button onclick="celebrate()">Yes</button>
-    </div>
+    <audio id="bgm" src="Stephanie Poetri - I Love You 3000.mp3" loop></audio>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
+
+    <div id="main-ui">
+        <h1>Will you be my Valentine?</h1>
+        <button class="btn-yes" onclick="openEnvelope()">YES!</button>
+    </div>
+
+    <div id="letter-container">
+        <div class="envelope">
+            <div class="lid" id="lid"></div>
+            <div class="paper" id="paper">
+                
+                <div class="speaker-icon" onclick="toggleMusic(this)">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                        <path class="speaker-x" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z" fill="#ff4d80" style="display: block;" /> 
+                    </svg>
+                </div>
+
+                <div class="paper-content">
+                    <div class="decoration-row">
+                        <img src="roses.png" class="decoration-img" alt="Rose Bouquet">
+                        <img src="bunny.png" class="decoration-img" alt="Jellycat Bunny">
+                    </div>
+                    
+                    <p>
+                        Dear Valentine,<br><br>
+                        I am so happy you said yes!<br>
+                        You make my heart beat just like this.<br>
+                        I love you!
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
-        let scene, camera, renderer, heartParticles;
+        // --- 3D PARTICLE HEART ---
+        let scene, camera, renderer, heartSystem;
 
-        function init() {
+        function init3D() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 3;
+            scene.fog = new THREE.FogExp2(0xffeff5, 0.002);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 4;
+            camera.lookAt(0, 0.3, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
             document.body.appendChild(renderer.domElement);
 
+            createHeart();
+            animate();
+        }
+
+        function createHeart() {
             const geometry = new THREE.BufferGeometry();
             const positions = [];
-            const particleCount = 15000; // Increased count for a "filled" look
+            const colors = [];
+            
+            const particleCount = 14000; 
+            const color1 = new THREE.Color(0xff0055); 
+            const color2 = new THREE.Color(0xff99bb);
 
-            // Rejection Sampling for a Solid 3D Heart
             let count = 0;
             while (count < particleCount) {
-                const x = (Math.random() - 0.5) * 2.5;
-                const y = (Math.random() - 0.5) * 2.5;
-                const z = (Math.random() - 0.5) * 2.5;
+                const x = (Math.random() - 0.5) * 3;
+                const y = (Math.random() - 0.5) * 3;
+                const z = (Math.random() - 0.5) * 3;
 
-                // 3D Heart Equation
-                const formula = Math.pow(x*x + (9/4)*y*y + z*z - 1, 3) - x*x*z*z*z - (9/80)*y*y*z*z*z;
+                const a = x * x + (9/4) * y * y + z * z - 1;
+                const value = a * a * a - x * x * z * z * z - (9/80) * y * y * z * z * z;
 
-                if (formula <= 0) {
-                    positions.push(x, z, -y); // Swapping axes for upright orientation
+                if (value <= 0 && value > -0.5) { 
+                    const fuzz = 0.05;
+                    positions.push(
+                        x + (Math.random()-0.5)*fuzz, 
+                        z + (Math.random()-0.5)*fuzz, 
+                        -y + (Math.random()-0.5)*fuzz
+                    ); 
+
+                    const mixedColor = color1.clone().lerp(color2, Math.random());
+                    colors.push(mixedColor.r, mixedColor.g, mixedColor.b);
                     count++;
                 }
             }
 
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 32; canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(16, 16, 15, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
 
             const material = new THREE.PointsMaterial({
-                color: 0xff1493,
-                size: 0.012,
+                size: 0.07,
+                vertexColors: true,
+                map: texture,
                 transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
+                opacity: 0.9,
+                alphaTest: 0.1
             });
 
-            heartParticles = new THREE.Points(geometry, material);
-            scene.add(heartParticles);
-
-            animate();
+            heartSystem = new THREE.Points(geometry, material);
+            heartSystem.position.y = 0.6;
+            scene.add(heartSystem);
         }
 
         function animate() {
             requestAnimationFrame(animate);
 
-            const time = Date.now() * 0.001;
-            
-            // The "Heartbeat" Logic
-            // Using a combination of sine waves to mimic a double-thump (lub-dub)
-            const beat = Math.pow(Math.sin(time * 3), 8) * 0.15 + 
-                         Math.pow(Math.sin(time * 3 + 0.5), 10) * 0.05;
+            const time = Date.now() * 0.0015;
+            const beat = Math.pow(Math.sin(time * 3), 16) * 0.15 + 
+                         Math.pow(Math.sin(time * 3 + 0.3), 6) * 0.05;
             
             const scale = 1 + beat;
-            heartParticles.scale.set(scale, scale, scale);
-
-            // Very slight slow rotation just for depth perception
-            heartParticles.rotation.y = Math.sin(time * 0.2) * 0.2;
-
+            heartSystem.scale.set(scale, scale, scale);
+            
             renderer.render(scene, camera);
-        }
-
-        function celebrate() {
-            const ui = document.getElementById('ui-layer');
-
-            // Small fade/slide transition of the question out
-            ui.style.opacity = '0';
-            ui.style.transform = 'translate(-50%, -52%)';
-
-            setTimeout(() => {
-                ui.innerHTML = `
-                    <div class="letter-container">
-                        <h2 class="letter-title">My little Valentine letter for you 💌</h2>
-                        <p class="letter-body">
-                            Hi love, thank you for saying <span class="heart">yes</span>.<br><br>
-                            I just wanted you to have a tiny corner of the internet that is only ours –
-                            a place made of stars, pixels, and a whole lot of feelings.<br><br>
-                            Whenever you miss me (even just a little), press play on any of these songs
-                            and remember that somewhere, I'm listening and thinking of you too.
-                        </p>
-                        <h3 class="song-section-title">Our little playlist</h3>
-                        <ul class="song-list">
-                            <li>• <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Song 1 – Your special track</a></li>
-                            <li>• <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Song 2 – For slow dancing</a></li>
-                            <li>• <a href="https://open.spotify.com/" target="_blank" rel="noopener noreferrer">Song 3 – For when you can’t sleep</a></li>
-                        </ul>
-                        <div class="letter-footer">
-                            I love you more than all the little hearts on this screen. ❤️
-                        </div>
-                    </div>
-                `;
-
-                // Reset transform so the letter is nicely centered and visible
-                ui.style.opacity = '1';
-                ui.style.transform = 'translate(-50%, -50%)';
-            }, 350);
         }
 
         window.addEventListener('resize', () => {
@@ -233,7 +423,45 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        init();
+        function openEnvelope() {
+            document.getElementById('main-ui').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('main-ui').style.display = 'none';
+            }, 500);
+
+            const container = document.getElementById('letter-container');
+            container.style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('lid').classList.add('open');
+                
+                setTimeout(() => {
+                    document.getElementById('paper').classList.add('visible');
+                    
+                    setTimeout(() => {
+                        document.getElementById('paper').classList.add('expanded');
+                    }, 600);
+                    
+                }, 500);
+            }, 100);
+        }
+
+        function toggleMusic(icon) {
+            const audio = document.getElementById('bgm');
+            const xIcon = icon.querySelector('.speaker-x');
+            
+            if (audio.paused) {
+                audio.play();
+                xIcon.style.display = 'none';
+                icon.classList.add('playing');
+            } else {
+                audio.pause();
+                xIcon.style.display = 'block';
+                icon.classList.remove('playing');
+            }
+        }
+
+        init3D();
     </script>
 </body>
 </html>
