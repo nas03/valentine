@@ -8,7 +8,6 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Playwrite+CU:wght@100..400&family=Playwrite+NZ+Basic:wght@100..400&display=swap"
-			rel="stylesheet"
 			rel="stylesheet" />
 		<link rel="stylesheet" href="style.css" />
 	</head>
@@ -36,7 +35,7 @@
 				<div class="timeline-item left">
 					<div class="content">
 						<img src="photo1.png" alt="Memory 1" />
-						<h3>Lần đầu tiên mình biết tới nhau <br />03-11-2025</h3>
+						<h3>Lần đầu được tiếp xúc với em <br />03-11-2025</h3>
 						<p>Em gọi anh là "chị" 😇.</p>
 					</div>
 				</div>
@@ -52,7 +51,7 @@
 				<div class="timeline-item left">
 					<div class="content">
 						<img src="photo3.jpg" alt="Memory 3" />
-						<h3>Đón năm mới cùng nhau <br />01-01-2026</h3>
+						<h3>Được đón năm mới cùng em lần đầu tiên <br />01-01-2026</h3>
 						<p>
 							Tin nhắn của em khiến anh cực kì xúc động. Hình như trước lúc này,
 							mình đã nói <span style="color: red">"love you"</span> được vài
@@ -63,7 +62,7 @@
 				<div class="timeline-item right">
 					<div class="content">
 						<img src="photo4.jpg" alt="Memory 3" />
-						<h3>Món quà em tặng trước ngày bay <br />25-01-2026</h3>
+						<h3>Được em tặng quà tiễn chân <br />25-01-2026</h3>
 						<p>
 							Hong biết nói gì hơn, anh yêu em, anh cảm ơn em yêu của anh nhiều
 							😘
@@ -73,7 +72,7 @@
 				<div class="timeline-item left">
 					<div class="content">
 						<img src="photo5.jpeg" alt="Memory 3" />
-						<h3>Anh khóc vì nhớ em <br />03-02-2026</h3>
+						<h3>Nhớ em quá nên khóc <br />03-02-2026</h3>
 						<p>
 							Lúc này là sáng sớm anh dậy, anh chưa quen cuộc sống, thấy cô đơn
 							và nhớ em rất nhiều. Anh cũng không kìm được nên muốn khóc để bớt
@@ -84,7 +83,7 @@
 				<div class="timeline-item right">
 					<div class="content">
 						<img src="photo6.jpeg" alt="Memory 3" />
-						<h3>Công khai em với tất cả mọi người <br />07-02-2026</h3>
+						<h3>Được em cho công khai ảnh <br />07-02-2026</h3>
 						<p>
 							Anh siêu siêu sĩ vì có thể yêu và được yêu một người giỏi, xinh
 							đẹp về cả ngoại hình, nhân cách như em 😍
@@ -93,7 +92,6 @@
 				</div>
 				<div class="timeline-item left">
 					<div class="content">
-						<!-- <img src="photo6.jpeg" alt="Memory 3" /> -->
 						<h3>Anh Yêu Em <br />?-?-2103</h3>
 						<p>
 							Cứ gọi là chúng mình yêu nhau tới năm 100 tuổi đi, mong rằng chúng
@@ -106,7 +104,20 @@
 
 			<div class="final-action">
 				<p>Và một lá thư nhỏ gửi tới em...</p>
-				<button class="btn-open-letter" onclick="openEnvelope()">Mở thư</button>
+				<div class="action-buttons">
+					<button class="btn-open-letter" onclick="openEnvelope()">
+						Mở thư
+					</button>
+
+					<div class="gift-wrapper">
+						<div class="gift-guide" id="gift-guide">
+							<span class="gift-guide-text">Mở đi!</span>
+							<div class="gift-guide-arrow"></div>
+						</div>
+
+						<div class="gift-icon" onclick="openGift()">🎁</div>
+					</div>
+				</div>
 			</div>
 		</section>
 
@@ -141,13 +152,23 @@
 								cả sau đó nữa. <br />
 								Anh yêu em, anh yêu em rất nhiều ♥️
 								<br />
-                                <br>
+								<br />
 								Anh yêu, chồng yêu của em, <br />
 								Nguyễn Anh Sơn ✨
 							</p>
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<div id="video-overlay" class="overlay">
+			<div class="video-container">
+				<div class="close-video" onclick="closeGift()">&times;</div>
+				<video id="gift-video" controls>
+					<source src="InLove.mp4" type="video/mp4" />
+					Your browser does not support the video tag.
+				</video>
 			</div>
 		</div>
 
